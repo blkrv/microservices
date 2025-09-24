@@ -10,14 +10,14 @@ COPY package*.json ./
 
 RUN npm install
 
+# Меняем владельца папки /app
+RUN chown -R appuser:appuser /app
+
 # Устанавливаем права доступа для нового пользователя
 COPY --chown=appuser:appuser . .
 
 # Переключаемся на нового пользователя
 USER appuser
-
-# Меняем владельца папки /app (ВНИМАНИЕ: менее безопасно)
-RUN chown -R appuser:appuser /app
 
 RUN npm run build
 
