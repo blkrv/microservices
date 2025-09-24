@@ -16,8 +16,8 @@ COPY --chown=appuser:appuser . .
 # Переключаемся на нового пользователя
 USER appuser
 
-# На всякий случай, даем полные права на папку /app (для отладки)
-RUN chmod -R 777 /app
+# Меняем владельца папки /app (ВНИМАНИЕ: менее безопасно)
+RUN chown -R appuser:appuser /app
 
 RUN npm run build
 
