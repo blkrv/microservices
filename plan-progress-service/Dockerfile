@@ -16,7 +16,7 @@ COPY --chown=appuser:appuser . .
 # Переключаемся на нового пользователя
 USER appuser
 
-RUN npm run build
+RUN echo "Hello from Docker build"
 
 EXPOSE 3003
 
