@@ -16,6 +16,9 @@ COPY --chown=appuser:appuser . .
 # Переключаемся на нового пользователя
 USER appuser
 
+# На всякий случай, даем полные права на папку /app (для отладки)
+RUN chmod -R 777 /app
+
 RUN npm run build
 
 EXPOSE 3001
