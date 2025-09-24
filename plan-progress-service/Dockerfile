@@ -16,7 +16,7 @@ COPY --chown=appuser:appuser . .
 # Переключаемся на нового пользователя
 USER appuser
 
-RUN npm run build && ls -l /app/dist  #  <-- Изменено: Добавлена команда ls -l /app/dist
+RUN /usr/local/bin/npm run build
 
 EXPOSE 3000
 
