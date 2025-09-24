@@ -1,15 +1,14 @@
-FROM node:lts-alpine
+FROM node:20-alpine
 
-RUN adduser -D nonroot
 WORKDIR /app
+
 COPY package*.json ./
 
 RUN npm install
 
 COPY . .
 
-USER nonroot
-RUN echo "Hello from Docker build"
+RUN npm run build
 
 EXPOSE 3000
 
