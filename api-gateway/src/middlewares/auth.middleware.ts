@@ -31,7 +31,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
         const jwtSecret = appConfig.jwtSecret;
         const decoded = jwt.verify(token, jwtSecret) as { userId: number };
         req.userId = decoded.userId;
-        req.headers['x-user-id'] = decoded.userId.toString(); // Передаем userId в микросервисы
+        req.headers['x-user-id'] = decoded.userId.toString(); 
         next();
     } catch (error) {
         console.error('Authentication error on Gateway:', error);

@@ -9,7 +9,7 @@ const PORT = appConfig.port;
 
 app.use(express.json());
 
-// Middleware для логирования запросов
+
 app.use((req, res, next) => {
   console.log(`[Gateway] Incoming request: ${req.method} ${req.url}`);
   next();
@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 
 app.use(authMiddleware);
 
-// Функция для создания конфигурации прокси
+
 const createProxyConfig = (
     target: string,
     pathRewrite: Record<string, string>
@@ -29,12 +29,12 @@ const createProxyConfig = (
         proxyReq: (proxyReq, req, res) => {
             const typedReq = req as Request;
 
-            // Установка заголовка x-user-id
+
             if (typedReq.userId) {
                 proxyReq.setHeader('x-user-id', typedReq.userId.toString());
             }
 
-            // Передача тела запроса
+
             if (typedReq.body) {
                 const bodyData = JSON.stringify(typedReq.body);
                 proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
@@ -48,7 +48,7 @@ const createProxyConfig = (
         },
         error: (err, req, res) => {
             console.error(`[Gateway Proxy Error]:`, err);
-            // Проверяем, что res - это объект ответа Express
+
             if (res && typeof (res as Response).status === 'function') {
                 (res as Response).status(500).json({ message: 'Service unavailable' });
             }
@@ -56,7 +56,7 @@ const createProxyConfig = (
     }
 });
 
-// Конфигурация прокси для сервисов
+
 const servicesConfig = [
     { path: '/users', target: appConfig.userServiceUrl, rewrite: { '^': '/users' } },
     { path: '/current-progress', target: appConfig.userServiceUrl, rewrite: { '^': '/current-progress' } },
@@ -70,17 +70,17 @@ const servicesConfig = [
     { path: '/blog-posts', target: appConfig.blogServiceUrl, rewrite: { '^': '/blog-posts' } },
 ];
 
-// Регистрация прокси-маршрутов
+
 servicesConfig.forEach(({ path, target, rewrite }) => {
     app.use(path, createProxyMiddleware(createProxyConfig(target, rewrite)));
 });
 
-// Health check
+
 app.get('/health', (req, res) => {
     res.status(200).send('API Gateway is healthy');
 });
 
-// Запуск сервера
+
 app.listen(PORT, () => {
     console.log(`API Gateway running on http://localhost:${PORT}`);
     console.log('--- Services ---');

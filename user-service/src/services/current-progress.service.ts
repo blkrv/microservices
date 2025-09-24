@@ -46,18 +46,15 @@ export class CurrentProgressService {
   }
 
   async createCurrentProgress(currentProgressData: Partial<CurrentProgress>): Promise<CurrentProgress> {
-    // Валидация на обязательное наличие user_id
     if (!currentProgressData.user_id) {
         throw new CustomError('User ID is required to create current progress', 400);
     }
 
-    // Проверка, существует ли пользователь с таким user_id
     const userExists = await this.userRepository.findOneBy({ user_id: currentProgressData.user_id });
     if (!userExists) {
         throw new CustomError(`User with ID ${currentProgressData.user_id} does not exist`, 400);
     }
 
-    // Проверка, есть ли уже прогресс для этого пользователя (один к одному отношение)
     const existingProgress = await this.currentProgressRepository.findOneBy({ user_id: currentProgressData.user_id });
     if (existingProgress) {
         throw new CustomError(`Current progress already exists for user ID ${currentProgressData.user_id}. Use update instead.`, 409);
@@ -75,7 +72,7 @@ export class CurrentProgressService {
       throw new CustomError('Current progress not found for this user to update', 404);
     }
 
-    // При обновлении, если передан user_id, убедиться, что он совпадает
+    
     if (currentProgressData.user_id && currentProgressData.user_id !== userId) {
         throw new CustomError('Cannot change user ID for an existing current progress record', 400);
     }

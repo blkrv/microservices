@@ -77,7 +77,7 @@ const handleUserCreatedEvent = async (message: any) => {
       email: email,
       author: username,
       title: 'New User Blog Post',
-      theme: Theme.FITNESS, // Используем enum Theme
+      theme: Theme.FITNESS,
       content: 'Welcome to the blog!',
     });
 

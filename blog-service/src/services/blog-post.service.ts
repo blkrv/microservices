@@ -19,12 +19,12 @@ export class BlogPostService {
   }
 
   async createBlogPost(blogPostData: Partial<BlogPost>): Promise<BlogPost> {
-    // Валидация обязательных полей
+
     if (!blogPostData.author || !blogPostData.title || !blogPostData.content || !blogPostData.theme) {
       throw new CustomError('Missing required fields: author, title, content, theme', 400);
     }
 
-    // Валидация значения enum Theme
+   
     if (!(Object.values(Theme).includes(blogPostData.theme as Theme))) {
         throw new CustomError(`Invalid theme value: ${blogPostData.theme}. Allowed themes are: ${Object.values(Theme).join(', ')}`, 400);
     }
@@ -39,7 +39,7 @@ export class BlogPostService {
       throw new CustomError('Blog post not found', 404);
     }
 
-    // Валидация значения enum Theme, если оно передано для обновления
+    
     if (blogPostData.theme && !(Object.values(Theme).includes(blogPostData.theme as Theme))) {
         throw new CustomError(`Invalid theme value: ${blogPostData.theme}. Allowed themes are: ${Object.values(Theme).join(', ')}`, 400);
     }

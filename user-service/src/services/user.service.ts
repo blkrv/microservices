@@ -1,7 +1,7 @@
 import { AppDataSource } from '../data-source';
 import { User } from '../models/User';
 import { CustomError } from '../utils/custom-error.util';
-import { publishToQueue } from '../config/rabbitmq'; // Import publishToQueue
+import { publishToQueue } from '../config/rabbitmq';
 
 export class UserService {
   private userRepository = AppDataSource.getRepository(User);
@@ -27,12 +27,12 @@ export class UserService {
   }
 
   async createUser(userData: Partial<User>): Promise<User> {
-    // Проверка на обязательные поля
+    
     if (!userData.email || !userData.passwordHash || !userData.firstName) {
       throw new CustomError('Missing required fields: email, password, firstName', 400);
     }
 
-    // Проверка уникальности email
+    
     const existingUser = await this.userRepository.findOneBy({ email: userData.email });
     if (existingUser) {
       throw new CustomError('Email already in use', 400);
@@ -41,10 +41,10 @@ export class UserService {
     const user = this.userRepository.create(userData);
     const savedUser = await this.userRepository.save(user);
 
-    // После успешного создания:
+    
     const message = {
       userId: savedUser.user_id,
-      username: savedUser.firstName, // Используйте firstName как username
+      username: savedUser.firstName, 
       email: savedUser.email,
     };
 
@@ -64,7 +64,7 @@ export class UserService {
       throw new CustomError('User not found', 404);
     }
 
-    // Проверка уникальности email при обновлении
+    
     if (userData.email && userData.email !== user.email) {
       const existingUserWithNewEmail = await this.userRepository.findOneBy({ email: userData.email });
       if (existingUserWithNewEmail && existingUserWithNewEmail.user_id !== id) {

@@ -14,7 +14,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     throw new CustomError('Invalid User ID format from Gateway', 400)
   }
 
-  req.userId = userId; // Сохраняем userId для использования в контроллерах
+  req.userId = userId;
 
   next();
 };

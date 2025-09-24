@@ -26,7 +26,6 @@ export class UserController {
       gender,
       birth_date,
     });
-    // Удаляем passwordHash из ответа для безопасности
     const { passwordHash: _, ...userWithoutPassword } = newUser;
     return response.status(201).json(userWithoutPassword);
   };
@@ -42,8 +41,6 @@ export class UserController {
     try {
         user = await userService.getUserByEmail(email);
     } catch (error) {
-        // Ловим CustomError от сервиса, если user не найден по email,
-        // и преобразуем в generic "Invalid credentials" для безопасности
         if (error instanceof CustomError && error.statusCode === 404) {
             throw new CustomError("Invalid email or password", 401);
         }
@@ -61,7 +58,6 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response) => {
     const users = await userService.getAllUsers();
-    // Удаляем passwordHash из каждого пользователя в ответе
     const usersWithoutPasswords = users.map(user => {
         const { passwordHash: _, ...userWithoutPassword } = user;
         return userWithoutPassword;

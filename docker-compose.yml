@@ -1,4 +1,4 @@
-# Убран устаревший атрибут version
+
 services:
   db:
     image: postgres:16.9-alpine
@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5433:5432" # Внешний порт:Внутренний порт
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./db-init:/docker-entrypoint-initdb.d/
@@ -37,7 +37,7 @@ services:
       db:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy # Add RabbitMQ dependency
+        condition: service_healthy
     networks:
       - app-network
 
@@ -57,7 +57,7 @@ services:
       db:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy # Add RabbitMQ dependency
+        condition: service_healthy
     networks:
       - app-network
 
@@ -75,7 +75,7 @@ services:
       DB_PORT: 5432
       USER_SERVICE_URL: http://user-service:${USER_SERVICE_INTERNAL_PORT}
       WORKOUT_EXERCISE_SERVICE_URL: http://workout-exercise-service:${WORKOUT_EXERCISE_SERVICE_INTERNAL_PORT}
-      # Используем имя сервиса RabbitMQ для подключения
+
       RABBITMQ_URL: amqp://user:password@rabbitmq:5672
     ports:
       - "${PLAN_PROGRESS_SERVICE_INTERNAL_PORT}:${PLAN_PROGRESS_SERVICE_INTERNAL_PORT}"
@@ -86,8 +86,8 @@ services:
         condition: service_started
       workout-exercise-service:
         condition: service_started
-      rabbitmq: # Добавлено ожидание RabbitMQ
-        condition: service_healthy # Используем healthcheck RabbitMQ
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -106,7 +106,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      rabbitmq: # Add RabbitMQ dependency
+      rabbitmq:
         condition: service_healthy
     networks:
       - app-network
@@ -124,7 +124,7 @@ services:
       BLOG_SERVICE_URL: http://blog-service:${BLOG_SERVICE_INTERNAL_PORT}
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "${API_GATEWAY_PORT}:${API_GATEWAY_INTERNAL_PORT}" # Внешний порт:Внутренний порт
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_INTERNAL_PORT}"
     depends_on:
       user-service:
         condition: service_started
@@ -134,7 +134,7 @@ services:
         condition: service_started
       blog-service:
         condition: service_started
-      rabbitmq: # Добавлено ожидание RabbitMQ для API Gateway, если он с ним как-то взаимодействует
+      rabbitmq:
         condition: service_healthy
     networks:
       - app-network
@@ -144,8 +144,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672" # Порт для AMQP
-      - "15672:15672" # Порт для веб-интерфейса (Management UI)
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
@@ -155,16 +155,16 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"] # Проверка статуса RabbitMQ
+      test: ["CMD", "rabbitmqctl", "status"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 30s # Уменьшено, но оставлено достаточно времени для старта
+      start_period: 30s
     restart: always
 
 volumes:
   db_data: {}
-  rabbitmq_data: {} # Volume для RabbitMQ
+  rabbitmq_data: {}
 
 networks:
   app-network:
