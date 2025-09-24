@@ -2,7 +2,7 @@ import { AppDataSource } from '../data-source';
 import { WorkoutPlan } from '../models/WorkoutPlan';
 import { UserServiceClient } from '../clients/user.service.client';
 import { CustomError } from '../utils/custom-error.util';
-import { publishToQueue } from '../config/rabbitmq'; // Import publishToQueue
+import { publishToQueue } from '../config/rabbitmq';
 
 export class WorkoutPlanService {
   private workoutPlanRepository = AppDataSource.getRepository(WorkoutPlan);
@@ -25,7 +25,7 @@ export class WorkoutPlanService {
   async getWorkoutPlanById(id: number): Promise<WorkoutPlan> {
     const workoutPlan = await this.workoutPlanRepository.findOne({
       where: { plan_id: id },
-      relations: ['workoutInPlans'], //  Load related workoutInPlans
+      relations: ['workoutInPlans'],
     });
     if (!workoutPlan) {
       throw new CustomError('Workout plan not found', 404);
@@ -34,7 +34,6 @@ export class WorkoutPlanService {
   }
 
   async createWorkoutPlan(workoutPlanData: Partial<WorkoutPlan>): Promise<WorkoutPlan> {
-    // Валидация обязательных полей
     if (!workoutPlanData.user_id || !workoutPlanData.name) {
       throw new CustomError('Missing required fields: user_id, name', 400);
     }
@@ -62,7 +61,7 @@ export class WorkoutPlanService {
     try {
       const workoutPlan = await this.workoutPlanRepository.findOne({
         where: { plan_id: id },
-        relations: ['workoutInPlans'], //  Load related workoutInPlans
+        relations: ['workoutInPlans'],
       });
 
       if (!workoutPlan) {
@@ -78,12 +77,11 @@ export class WorkoutPlanService {
         }
       }
 
-      // Проверка уникальности имени плана при обновлении, если имя меняется
+
       if (workoutPlanData.name && workoutPlanData.name !== workoutPlan.name) {
         const existingPlanWithName = await this.workoutPlanRepository.findOne({
           where: { user_id: workoutPlan.user_id, name: workoutPlanData.name }
         });
-        // Если нашли план с таким именем, и это не тот же самый план (по ID)
         if (existingPlanWithName && existingPlanWithName.plan_id !== workoutPlan.plan_id) {
           throw new CustomError(`Workout plan with name "${workoutPlanData.name}" already exists for this user.`, 409);
         }
@@ -102,14 +100,14 @@ export class WorkoutPlanService {
           const typedKey = key as keyof WorkoutPlan;
           const workoutPlanDataValue = workoutPlanData[typedKey];
 
-          // Проверяем, что workoutPlanDataValue не undefined перед сравнением
+
           if (workoutPlanDataValue !== undefined && oldWorkoutPlan[typedKey] !== workoutPlanDataValue) {
             updatedFields[key] = workoutPlanDataValue;
           }
         }
       }
 
-      // Получаем workoutIds из связанных workoutInPlans
+ 
       const workoutIds = workoutPlan.workoutInPlans.map(workoutInPlan => workoutInPlan.workout_id);
 
       // Формируем сообщение для RabbitMQ
@@ -120,7 +118,7 @@ export class WorkoutPlanService {
         updatedFields: updatedFields,
       };
 
-      // Отправляем сообщение в RabbitMQ
+ 
       const published = await publishToQueue('plan_events', 'plan.updated', message);
 
       if (published) {

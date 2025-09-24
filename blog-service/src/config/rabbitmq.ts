@@ -1,5 +1,3 @@
-// blog-service/src/config/rabbitmq.ts
-
 import amqp from 'amqplib';
 import { AppDataSource } from '../data-source';
 import { BlogPost, Theme } from '../models/BlogPost';
