@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:lts-alpine
 
 # Добавляем пользователя и группу с новым ID (1001)
 RUN addgroup -g 1001 appuser && \
@@ -9,9 +9,6 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install
-
-# Меняем владельца папки /app
-RUN chown -R appuser:appuser /app
 
 # Устанавливаем права доступа для нового пользователя
 COPY --chown=appuser:appuser . .
