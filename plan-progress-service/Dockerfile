@@ -16,8 +16,8 @@ COPY --chown=appuser:appuser . .
 # Переключаемся на нового пользователя
 USER appuser
 
-RUN echo "Hello from Docker build"
+RUN npm run build && ls -l /app/dist  #  <-- Изменено: Добавлена команда ls -l /app/dist
 
-EXPOSE 3003
+EXPOSE 3000
 
 CMD ["node", "dist/index.js"]
